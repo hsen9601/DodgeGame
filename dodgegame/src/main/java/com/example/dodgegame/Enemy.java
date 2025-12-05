@@ -36,5 +36,26 @@ public class Enemy {
     return rec.getTranslateY() - recHeight/2 > windowHeight/2;
     }
 
-    
+    public boolean checkForCollision(Rectangle player)
+    {
+        double playerLeft = player.getTranslateX() - player.getWidth()/2;
+        double playerRight = player.getTranslateX() + player.getWidth()/2;
+        double playerTop = player.getTranslateY() - player.getHeight()/2;
+        double playerBottom = player.getTranslateY() + player.getHeight()/2;
+
+        double enemyLeft = rec.getTranslateX() - rec.getWidth()/2;
+        double enemyRight = rec.getTranslateX() + rec.getWidth()/2;
+        double enemyTop = rec.getTranslateY() - rec.getHeight()/2;
+        double enemyBottom = rec.getTranslateY() + rec.getHeight()/2;
+
+        boolean collisionX = playerRight >= enemyLeft && playerLeft <= enemyRight;
+        boolean collisionY = playerBottom >= enemyTop && playerTop <= enemyBottom;
+
+
+        if(collisionX && collisionY){
+            return true;
+        }
+        
+        return false;
+    }
 }
