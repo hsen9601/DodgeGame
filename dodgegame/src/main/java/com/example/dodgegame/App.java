@@ -97,6 +97,9 @@ public class App extends Application {
                         it.remove();
                         System.out.println("Enemy Destroyed");
                     }
+                    if(e.checkForCollision(rec)){
+                        System.out.println("Player destroyed");
+                    }
                 }
 
                 // Boundaries
