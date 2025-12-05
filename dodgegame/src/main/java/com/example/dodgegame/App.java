@@ -1,5 +1,9 @@
 package com.example.dodgegame;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -13,10 +17,13 @@ public class App extends Application {
         private boolean downPressed = false;
         private boolean leftPressed  =false;
         private boolean rightPressed = false;
-        private int recWidth = 100;
-        private int recHeight = 50;
-        private int windowWidth = 1400;
-        private int windowHeight = 800;
+        private final int recWidth = 70;
+        private final int recHeight = 50;
+        private final int windowWidth = 1400;
+        private final int windowHeight = 800;
+        private final double speed = 5;
+
+        
         private double dy = 0;
         private double dx = 0;
 
@@ -24,15 +31,24 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         StackPane root = new StackPane();
-        Scene scene = new Scene(root, windowWidth, windowHeight);
+        Scene scene = new Scene(root, windowWidth, windowHeight,Color.rgb(90,96,99));
 
-        Rectangle rec = new Rectangle(recWidth,recHeight,Color.BLUE);
+        Rectangle rec = new Rectangle(recWidth,recHeight,Color.rgb(25,55, 71));
 
-        
-        
-        double speed  = 5;
+        List<Enemy> enemies = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            Enemy e = new Enemy(); 
+            enemies.add(e);
+            root.getChildren().add(e.getNode());
+        }
+
+
+
         rec.setTranslateX(0);
         rec.setTranslateY(0);
+
+
         root.getChildren().add(rec);
 
         scene.setOnKeyPressed(event -> {
@@ -56,37 +72,47 @@ public class App extends Application {
             @Override
             public void handle(long now){
                 dx = 0;
-                dy  = 0;
-                if (upPressed) dy -=1;
-                if( downPressed) dy +=1;
-                if(leftPressed) dx-=1;
-                if(rightPressed) dx+=1;
+                dy = 0;
+                if (upPressed)      dy -= 1;
+                if( downPressed)    dy += 1;
+                if(leftPressed)     dx -= 1;
+                if(rightPressed)    dx += 1;
 
+                // Normalize movement
                 if(dx != 0 && dy != 0){
                     dx *= 1/Math.sqrt(2);
                     dy *= 1/Math.sqrt(2);
                 }
 
+                // Movement
                 rec.setTranslateX(rec.getTranslateX() + dx * speed);
                 rec.setTranslateY(rec.getTranslateY() + dy * speed);
 
-                if(rec.getTranslateX()< -windowWidth/2 + recWidth/2){
-                    rec.setTranslateX(-700+ rec.getWidth()/2);
-                }
-                if(rec.getTranslateX()> windowWidth/2 - recWidth/2){
-                    rec.setTranslateX(700- rec.getWidth()/2);
-                }
-                if(rec.getTranslateY()< -windowHeight/2 + recHeight/2){
-                    rec.setTranslateY(-400+ rec.getHeight()/2);
-                }
-                if(rec.getTranslateY()> windowHeight/2 - recHeight/2){
-                    rec.setTranslateY(400- rec.getHeight()/2);
+                // Destroy Enemy if out of bounds
+                for (Iterator<Enemy> it= enemies.iterator(); it.hasNext();) {
+                    Enemy e = it.next();
+                    e.moveEnemy();
+                    if(e.shouldBeDestroyed()){
+                        root.getChildren().remove(e.getNode());
+                        it.remove();
+                        System.out.println("Enemy Destroyed");
+                    }
                 }
 
+                // Boundaries
+                double minX = -windowWidth/2 + recWidth/2;
+                double maxX = windowWidth/2  - recWidth/2;
+                double minY = -windowHeight/2 + recHeight/2;
+                double maxY = windowHeight/2 - recHeight/2;
+
+                
+
+                if(rec.getTranslateX()< minX) rec.setTranslateX(minX);
+                if(rec.getTranslateX()> maxX) rec.setTranslateX(maxX);
+                if(rec.getTranslateY()< minY) rec.setTranslateY(minY);
+                if(rec.getTranslateY()> maxY) rec.setTranslateY(maxY);
             }
         };
-
-        
 
         timer.start();
         stage.setTitle("Dodge Game");
