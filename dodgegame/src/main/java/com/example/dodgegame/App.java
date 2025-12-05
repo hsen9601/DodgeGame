@@ -17,6 +17,8 @@ public class App extends Application {
         private int recHeight = 50;
         private int windowWidth = 1400;
         private int windowHeight = 800;
+        private double dy = 0;
+        private double dx = 0;
 
 
     @Override
@@ -53,10 +55,20 @@ public class App extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now){
-                if(upPressed) rec.setTranslateY(rec.getTranslateY()-speed);
-                if(downPressed) rec.setTranslateY(rec.getTranslateY()+ speed);
-                if(leftPressed) rec.setTranslateX(rec.getTranslateX()- speed);
-                if(rightPressed) rec.setTranslateX(rec.getTranslateX()+ speed);
+                dx = 0;
+                dy  = 0;
+                if (upPressed) dy -=1;
+                if( downPressed) dy +=1;
+                if(leftPressed) dx-=1;
+                if(rightPressed) dx+=1;
+
+                if(dx != 0 && dy != 0){
+                    dx *= 1/Math.sqrt(2);
+                    dy *= 1/Math.sqrt(2);
+                }
+
+                rec.setTranslateX(rec.getTranslateX() + dx * speed);
+                rec.setTranslateY(rec.getTranslateY() + dy * speed);
 
                 if(rec.getTranslateX()< -windowWidth/2 + recWidth/2){
                     rec.setTranslateX(-700+ rec.getWidth()/2);
