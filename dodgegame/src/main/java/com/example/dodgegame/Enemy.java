@@ -8,8 +8,8 @@ import javafx.scene.shape.Rectangle;
 public class Enemy {
     private final int recWidth = 70;
     private final int recHeight = 50;
-    private final int windowWidth = 1400;
-    private final int windowHeight = 800;
+    private final int windowWidth = 800;
+    private final int windowHeight = 600;
     private final double speed;
     public static double dy = 0;
     private final Rectangle rec;
@@ -21,7 +21,7 @@ public class Enemy {
         System.out.println(rec.getTranslateX());
         rec.setTranslateY(0-windowHeight/2);
 
-        this.speed = 1 + rdm.nextDouble() * 1.5;
+        this.speed = 5/2;
     }
 
     public Rectangle getNode(){
@@ -29,11 +29,11 @@ public class Enemy {
     }
 
     public void moveEnemy(){
-        rec.setTranslateY(rec.getTranslateY() + speed /5);
+        rec.setTranslateY(rec.getTranslateY() + speed);
     }
 
     public boolean shouldBeDestroyed() {
-    return rec.getTranslateY() - recHeight/2 > windowHeight/2;
+        return rec.getTranslateY() - recHeight/2 > windowHeight/2;
     }
 
     public boolean checkForCollision(Rectangle player)
@@ -51,11 +51,6 @@ public class Enemy {
         boolean collisionX = playerRight >= enemyLeft && playerLeft <= enemyRight;
         boolean collisionY = playerBottom >= enemyTop && playerTop <= enemyBottom;
 
-
-        if(collisionX && collisionY){
-            return true;
-        }
-        
-        return false;
+        return collisionX && collisionY;
     }
 }
