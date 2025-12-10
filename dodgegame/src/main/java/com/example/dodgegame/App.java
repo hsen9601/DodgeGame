@@ -11,7 +11,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -34,18 +33,19 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
+        // Starting Scene
         StackPane root = new StackPane();
-        Scene scene = new Scene(root, windowWidth, windowHeight,Color.rgb(90,96,99));
+        Scene scene = new Scene(root, windowWidth, windowHeight,Color.rgb(10,15,31));
 
-        Rectangle rec = new Rectangle(recWidth,recHeight,Color.rgb(25,55, 71));
+        // Creating Player
+        Player player  = new Player();
+        root.getChildren().add(player.getNode());
 
+        // Creating Enemies
         List<Enemy> enemies = new ArrayList<>();
-
-        
-
-        Timeline enemySpawner = new Timeline(new KeyFrame(Duration.millis(500), event ->{
+        Timeline enemySpawner = new Timeline(new KeyFrame(Duration.millis(250), event ->{
             Enemy newEnemy = new Enemy();
-            if(enemies.size()<6){
+            if(enemies.size()<20){
 
             enemies.add(newEnemy);
             root.getChildren().add(newEnemy.getNode());
@@ -54,12 +54,8 @@ public class App extends Application {
         enemySpawner.setCycleCount(Timeline.INDEFINITE);
         enemySpawner.play();
 
-        rec.setTranslateX(0);
-        rec.setTranslateY(0);
 
-
-        root.getChildren().add(rec);
-
+        
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case W -> upPressed = true;
@@ -94,8 +90,8 @@ public class App extends Application {
                 }
 
                 // Movement
-                rec.setTranslateX(rec.getTranslateX() + dx * speed);
-                rec.setTranslateY(rec.getTranslateY() + dy * speed);
+                player.getNode().setTranslateX(player.getNode().getTranslateX() + dx * speed);
+                player.getNode().setTranslateY(player.getNode().getTranslateY() + dy * speed);
 
                 // Destroy Enemy if out of bounds
                 for (Iterator<Enemy> it= enemies.iterator(); it.hasNext();) {
@@ -106,24 +102,24 @@ public class App extends Application {
                         it.remove();
                         System.out.println("Enemy Destroyed");
                     }
-                    if(e.checkForCollision(rec)){
+                    if(e.checkForCollision(player.getNode())){
                         System.out.println("Player destroyed");
                         stage.close();
                     }
                 }
 
                 // Boundaries
-                double minX = -windowWidth/2 + recWidth/2;
-                double maxX = windowWidth/2  - recWidth/2;
-                double minY = -windowHeight/2 + recHeight/2;
-                double maxY = windowHeight/2 - recHeight/2;
+                double minX = -windowWidth/2 + player.getWidth(player.getNode())/2;
+                double maxX = windowWidth/2  - player.getWidth(player.getNode())/2;
+                double minY = -windowHeight/2 + player.getHeight(player.getNode())/2;
+                double maxY = windowHeight/2 - player.getHeight(player.getNode())/2;
 
                 
 
-                if(rec.getTranslateX()< minX) rec.setTranslateX(minX);
-                if(rec.getTranslateX()> maxX) rec.setTranslateX(maxX);
-                if(rec.getTranslateY()< minY) rec.setTranslateY(minY);
-                if(rec.getTranslateY()> maxY) rec.setTranslateY(maxY);
+                if(player.getNode().getTranslateX()< minX) player.getNode().setTranslateX(minX);
+                if(player.getNode().getTranslateX()> maxX) player.getNode().setTranslateX(maxX);
+                if(player.getNode().getTranslateY()< minY) player.getNode().setTranslateY(minY);
+                if(player.getNode().getTranslateY()> maxY) player.getNode().setTranslateY(maxY);
             }
         };
 
