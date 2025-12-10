@@ -20,12 +20,8 @@ public class App extends Application {
         private boolean downPressed = false;
         private boolean leftPressed  =false;
         private boolean rightPressed = false;
-        private final int recWidth = 70;
-        private final int recHeight = 50;
         private final int windowWidth = 800;
         private final int windowHeight = 600;
-        private final double speed = 5;
-
         
         private double dy = 0;
         private double dx = 0;
@@ -41,9 +37,10 @@ public class App extends Application {
         Player player  = new Player();
         root.getChildren().add(player.getNode());
 
+        root.getChildren().add(player.getHitbox());
         // Creating Enemies
         List<Enemy> enemies = new ArrayList<>();
-        Timeline enemySpawner = new Timeline(new KeyFrame(Duration.millis(250), event ->{
+        Timeline enemySpawner = new Timeline(new KeyFrame(Duration.millis(1500), event ->{
             Enemy newEnemy = new Enemy();
             if(enemies.size()<20){
 
@@ -55,7 +52,6 @@ public class App extends Application {
         enemySpawner.play();
 
 
-        
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case W -> upPressed = true;
@@ -90,8 +86,9 @@ public class App extends Application {
                 }
 
                 // Movement
-                player.getNode().setTranslateX(player.getNode().getTranslateX() + dx * speed);
-                player.getNode().setTranslateY(player.getNode().getTranslateY() + dy * speed);
+                player.move(dx * player.speed, dy * player.speed);
+                //Boundaries
+                player.clampPosition(windowWidth, windowHeight);
 
                 // Destroy Enemy if out of bounds
                 for (Iterator<Enemy> it= enemies.iterator(); it.hasNext();) {
@@ -102,24 +99,12 @@ public class App extends Application {
                         it.remove();
                         System.out.println("Enemy Destroyed");
                     }
-                    if(e.checkForCollision(player.getNode())){
+                    if(e.checkForCollision(player)){
                         System.out.println("Player destroyed");
                         stage.close();
                     }
                 }
 
-                // Boundaries
-                double minX = -windowWidth/2 + player.getWidth(player.getNode())/2;
-                double maxX = windowWidth/2  - player.getWidth(player.getNode())/2;
-                double minY = -windowHeight/2 + player.getHeight(player.getNode())/2;
-                double maxY = windowHeight/2 - player.getHeight(player.getNode())/2;
-
-                
-
-                if(player.getNode().getTranslateX()< minX) player.getNode().setTranslateX(minX);
-                if(player.getNode().getTranslateX()> maxX) player.getNode().setTranslateX(maxX);
-                if(player.getNode().getTranslateY()< minY) player.getNode().setTranslateY(minY);
-                if(player.getNode().getTranslateY()> maxY) player.getNode().setTranslateY(maxY);
             }
         };
 
